@@ -1,0 +1,34 @@
+# Eclipse
+.project
+.classpath
+.settings/
+.factorypath
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea
+out/
+
+# Gradle
+.gradle/
+.ivy/
+
+# Maven
+target/
+
+# TestNG
+test-output/
+
+# JBoss AS
+transaction.log
+
+# Infinitest configuration
+infinitest.filters
+
+# Logs
+*.log
+
+# Openshift
+deployments/
