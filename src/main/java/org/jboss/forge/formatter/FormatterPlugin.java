@@ -1,12 +1,10 @@
 package org.jboss.forge.formatter;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jface.text.Document;
@@ -14,7 +12,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 import org.jboss.forge.formatter.config.ConfigReader;
 import org.jboss.forge.formatter.config.PredefinedConfig;
-import org.jboss.forge.project.facets.JavaSourceFacet;
+import org.jboss.forge.maven.MavenCoreFacet;
 import org.jboss.forge.resources.Resource;
 import org.jboss.forge.resources.java.JavaResource;
 import org.jboss.forge.shell.Shell;
@@ -29,7 +27,7 @@ import org.jboss.forge.shell.plugins.RequiresProject;
 @Alias("formatter")
 @Help("Format source code")
 @RequiresProject
-@RequiresFacet(JavaSourceFacet.class)
+@RequiresFacet(MavenCoreFacet.class)
 public class FormatterPlugin implements Plugin {
 
     private LineEnding lineEnding = LineEnding.KEEP;
@@ -52,14 +50,14 @@ public class FormatterPlugin implements Plugin {
     private void formatResource(Resource<?> file) {
         try {
             if (file instanceof JavaResource) {
-                shell.print("Formatting " + file.getFullyQualifiedName());
+                ShellMessages.info(shell, "Formatting " + file.getFullyQualifiedName());
                 String code = IOUtils.toString(file.getResourceInputStream());
                 CodeFormatter formatter = createFormatter();
-                TextEdit te = formatter.format(CodeFormatter.K_COMPILATION_UNIT, code, 0, code.length(), 0,
+                TextEdit textedit = formatter.format(formatterOptions(), 
+                        code, 0, code.length(), 0,
                         getLineEnding(code));
-
                 IDocument doc = new Document(code);
-                te.apply(doc);
+                textedit.apply(doc);
                 String formattedCode = doc.get();
                 ((JavaResource) file).setContents(formattedCode);
             }
@@ -77,14 +75,11 @@ public class FormatterPlugin implements Plugin {
     }
 
     private Map<String, String> getFormattingOptions() {
-        Map<String, String> options = new HashMap<String, String>();
-        options = reader.readPredefined(PredefinedConfig.Sun);
-        
-        // TODO: Extract from Project...
-        options.put(JavaCore.COMPILER_SOURCE, "1.6");
-        options.put(JavaCore.COMPILER_COMPLIANCE, "1.6");
-        options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, "1.6");
-        return options;
+        return reader.readPredefined(PredefinedConfig.Sun);
+    }
+    
+    private int formatterOptions() {
+        return CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS;
     }
 
 }

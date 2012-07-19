@@ -65,11 +65,17 @@
 			<artifactId>forge-test-harness</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.jboss.forge</groupId>
-			<artifactId>forge-shell</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.jboss.forge</groupId>
+            <artifactId>forge-shell</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>core</artifactId>
+                    <groupId>org.eclipse.jdt</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
 		<dependency>
 			<groupId>org.jibx.config.3rdparty.org.eclipse</groupId>
