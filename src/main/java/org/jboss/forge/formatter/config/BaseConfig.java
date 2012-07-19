@@ -23,19 +23,26 @@ public abstract class BaseConfig {
         return forgeXml;
     }
     
-    Node lookupFormatter(FileResource<?> forgeXml, boolean createIfMissing) {
+    Node lookupFormatter(FileResource<?> forgeXml, FormatterType type, boolean createIfMissing) {
         if (forgeXml.exists()) {
             Node forge = XMLParser.parse(forgeXml.getResourceInputStream());
-            return lookupFormatter(forge, createIfMissing);
+            return lookupFormatter(forge, type, createIfMissing);
         }
         return null;
     }
     
-    Node lookupFormatter(Node document, boolean createIfMissing) {
+    Node lookupFormatter(Node document, FormatterType type, boolean createIfMissing) {
         Node formatter = document.getSingle(FORMATTER_TAG);
         if (formatter == null && createIfMissing) {
             formatter = document.createChild(FORMATTER_TAG);
+        } else if (formatter == null) {
+            return null;
         }
-        return formatter;
+        String typeName = type.name().toLowerCase();
+        Node formatterType = formatter.getSingle(typeName);
+        if (formatterType == null) {
+            formatterType = formatter.createChild(typeName);
+        }
+        return formatterType;
     }
 }

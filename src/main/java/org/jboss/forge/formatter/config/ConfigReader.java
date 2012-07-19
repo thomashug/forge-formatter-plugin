@@ -25,7 +25,7 @@ public class ConfigReader extends BaseConfig {
     public Map<String, String> read() {
         try {
             FileResource<?> forgeXml = resolveForgeXml(project, false);
-            Node formatter = lookupFormatter(forgeXml, false);
+            Node formatter = lookupFormatter(forgeXml, FormatterType.Java, false);
             if (formatter != null) {
                 String configFileName = formatter.getText();
                 FileResource<?> configFile = (FileResource<?>) project.getProjectRoot().getChild(configFileName);

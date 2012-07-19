@@ -16,7 +16,7 @@ public class ConfigWriter extends BaseConfig {
     public void install(Resource<?> formatter) {
         FileResource<?> forgeXml = resolveForgeXml(project, true);
         Node forge = XMLParser.parse(forgeXml.getResourceInputStream());
-        Node form = lookupFormatter(forge, true);
+        Node form = lookupFormatter(forge, FormatterType.Java, true);
         String rootPath = project.getProjectRoot().getFullyQualifiedName();
         String formatterPath = formatter.getFullyQualifiedName();
         if (formatterPath.startsWith(rootPath)) {
