@@ -13,13 +13,29 @@ import org.jboss.forge.maven.MavenCoreFacet;
 import org.jboss.forge.parser.xml.Node;
 import org.jboss.forge.parser.xml.XMLParser;
 import org.jboss.forge.project.Project;
+import org.jboss.forge.resources.FileResource;
 
-public class ConfigReader {
+public class ConfigReader extends BaseConfig {
     
     private static final String PREDEFINED_FORMATTERS = "predefined-formatters.xml";
     
     @Inject
     private Project project;
+    
+    public Map<String, String> read() {
+        try {
+            FileResource<?> forgeXml = resolveForgeXml(project, false);
+            Node formatter = lookupFormatter(forgeXml, false);
+            if (formatter != null) {
+                String configFileName = formatter.getText();
+                FileResource<?> configFile = (FileResource<?>) project.getProjectRoot().getChild(configFileName);
+                return read(configFile.getResourceInputStream());
+            }
+            return readPredefined(PredefinedConfig.Sun);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed reading config", e);
+        }
+    }
 
     public Map<String, String> readPredefined(PredefinedConfig configName) {
         try {
@@ -27,7 +43,7 @@ public class ConfigReader {
             Map<String, String> result = read(stream, configName.name());
             return updateWithSettings(result);
         } catch (Exception e) {
-            throw new RuntimeException("Failed reading config" + configName, e);
+            throw new RuntimeException("Failed reading config " + configName, e);
         }
     }
     
@@ -46,6 +62,10 @@ public class ConfigReader {
             }
         }
         return settings;
+    }
+    
+    private Map<String, String> read(InputStream in) throws Exception {
+        return read(in, null);
     }
     
     private Map<String, String> read(InputStream in, String name) throws Exception {

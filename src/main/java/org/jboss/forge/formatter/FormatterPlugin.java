@@ -11,15 +11,18 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 import org.jboss.forge.formatter.config.ConfigReader;
-import org.jboss.forge.formatter.config.PredefinedConfig;
+import org.jboss.forge.formatter.config.ConfigWriter;
+import org.jboss.forge.formatter.config.LineEnding;
 import org.jboss.forge.maven.MavenCoreFacet;
 import org.jboss.forge.resources.Resource;
 import org.jboss.forge.resources.java.JavaResource;
 import org.jboss.forge.shell.Shell;
 import org.jboss.forge.shell.ShellMessages;
 import org.jboss.forge.shell.plugins.Alias;
+import org.jboss.forge.shell.plugins.Command;
 import org.jboss.forge.shell.plugins.DefaultCommand;
 import org.jboss.forge.shell.plugins.Help;
+import org.jboss.forge.shell.plugins.Option;
 import org.jboss.forge.shell.plugins.Plugin;
 import org.jboss.forge.shell.plugins.RequiresFacet;
 import org.jboss.forge.shell.plugins.RequiresProject;
@@ -37,10 +40,26 @@ public class FormatterPlugin implements Plugin {
     
     @Inject
     private ConfigReader reader;
+    
+    @Inject
+    private ConfigWriter writer;
 
     @DefaultCommand
     public void format(Resource<?> file) {
-        formatResource(file);
+        try {
+            formatResource(file);
+        } catch (Exception e) {
+            ShellMessages.error(shell, "Could not format resource: " + e.getMessage());
+        }
+    }
+    
+    @Command(value = "setup", help = "Install a formatter file")
+    public void setup(@Option(required = true) Resource<?> format) {
+        try {
+            writer.install(format);
+        } catch (Exception e) {
+            ShellMessages.error(shell, "Could not setup formatter: " + e.getMessage());
+        }
     }
 
 //    public void resourceChanged(@Observes PickupResource resource) {
@@ -75,7 +94,7 @@ public class FormatterPlugin implements Plugin {
     }
 
     private Map<String, String> getFormattingOptions() {
-        return reader.readPredefined(PredefinedConfig.Sun);
+        return reader.read();
     }
     
     private int formatterOptions() {

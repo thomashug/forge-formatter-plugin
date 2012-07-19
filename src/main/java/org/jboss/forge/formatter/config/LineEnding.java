@@ -1,4 +1,4 @@
-package org.jboss.forge.formatter;
+package org.jboss.forge.formatter.config;
 
 public enum LineEnding {
 
