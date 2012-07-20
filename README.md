@@ -1,5 +1,7 @@
 # Forge Formatter Plugin
 
+[![Build Status](https://buildhive.cloudbees.com/job/thomashug/job/forge-formatter-plugin/badge/icon)](https://buildhive.cloudbees.com/job/thomashug/job/forge-formatter-plugin/)
+
 As much as [Forge](http://forge.github.com) is a great tool - the code it generates is 
 usually not in your preferred code styling. This plugin is intended to help you getting 
 source code nice and readable after generation, in the way you want it.
