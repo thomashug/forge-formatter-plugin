@@ -37,7 +37,7 @@ public class FormatterPluginTest extends AbstractShellTest {
     }
     
     @Test
-    public void should_use_customer_formatter() throws Exception {
+    public void should_use_custom_formatter() throws Exception {
         // given
         Project p = initializeJavaProject();
         File formatter = new File("src/test/resources/files/eclipse-formatter.xml");
@@ -45,11 +45,24 @@ public class FormatterPluginTest extends AbstractShellTest {
         FileUtils.copyFile(formatter, target);
         
         // when
-        getShell().execute("formatter setup eclipse-formatter.xml");
+        getShell().execute("formatter setup eclipse-formatter.xml --enableAutoFormat");
         getShell().execute("formatter " + javaSource.getAbsolutePath());
         
         // then
         compare("src/test/resources/reference/TestClass_eclipse.java");
+    }
+    
+    @Test
+    public void should_install_predefined_formatter() throws Exception {
+        // given
+        initializeJavaProject();
+        
+        // when
+        getShell().execute("formatter setup --configName JBoss");
+        getShell().execute("formatter " + javaSource.getAbsolutePath());
+        
+        // then
+        compare("src/test/resources/reference/TestClass_jboss.java");
     }
 
     @Before

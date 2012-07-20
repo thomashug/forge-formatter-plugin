@@ -22,14 +22,27 @@ public class ConfigReader extends BaseConfig {
     @Inject
     private Project project;
     
+    public boolean isAutoFormatEnabled() {
+        Node formatter = lookupFormatter(resolveForgeXml(project, false), false);
+        if (formatter != null) {
+            Node auto = formatter.getSingle(AUTOFORMAT_TAG);
+            return auto != null ? Boolean.valueOf(auto.getText()) : false;
+        }
+        return false;
+    }
+    
     public Map<String, String> read() {
         try {
             FileResource<?> forgeXml = resolveForgeXml(project, false);
             Node formatter = lookupFormatter(forgeXml, FormatterType.Java, false);
             if (formatter != null) {
-                String configFileName = formatter.getText();
-                FileResource<?> configFile = (FileResource<?>) project.getProjectRoot().getChild(configFileName);
-                return read(configFile.getResourceInputStream());
+                String configName = formatter.getText();
+                if (PredefinedConfig.exists(configName)) {
+                    return readPredefined(PredefinedConfig.valueOf(configName));
+                } else {
+                    FileResource<?> configFile = (FileResource<?>) project.getProjectRoot().getChild(configName);
+                    return read(configFile.getResourceInputStream());
+                }
             }
             return readPredefined(PredefinedConfig.Sun);
         } catch (Exception e) {
@@ -82,4 +95,5 @@ public class ConfigReader extends BaseConfig {
         }
         return result;
     }
+
 }
