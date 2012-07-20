@@ -91,6 +91,7 @@ public class ConfigReader extends BaseConfig {
                     String value = setting.getAttribute("value");
                     result.put(key, value);
                 }
+                break;
             }
         }
         return result;
