@@ -1,11 +1,11 @@
 # Forge Formatter Plugin
 
-As much as [Forge](http://forge.github.com) is a great tool - the code it generates looks 
-usually not very cleaned up. This plugin is intended to help you getting source code nice and 
-readable after generation.
+As much as [Forge](http://forge.github.com) is a great tool - the code it generates is 
+usually not in your preferred code styling. This plugin is intended to help you getting 
+source code nice and readable after generation, in the way you want it.
 
 The formatter plugin currently supports only Java source formatting. Other file formats might
-be added at a later version.
+be added in a later version.
 
 ## Installation
 
@@ -24,17 +24,17 @@ This will format your Java file based on the Sun coding conventions.
 
 ### Formatting Options
 
-The Forge formatter plugin supports several predefined formatter settings. In order to
+The Forge formatter plugin supports several predefined formatter settings. To
 use one of them, execute the formatter command with the following option:
 
     formatter ${path_to_file}.java --configName [Sun|Eclipse|JBoss]
-    
+
 Using this option each time you want to format a file is quite inconvenient. You can configure
 your project to use a specific formatter profile every time you format a file with the
 following setup command:
 
     formatter setup --configName [Sun|Eclipse|JBoss]
-    
+
 ### Custom Formatter Settings
 
 You can also use customer formatter settings by exporting a configuration from Eclipse.

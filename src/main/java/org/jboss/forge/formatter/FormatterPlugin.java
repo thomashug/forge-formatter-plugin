@@ -49,34 +49,28 @@ public class FormatterPlugin implements Plugin {
     private ConfigWriter writer;
 
     @DefaultCommand(help = "Format a source file")
-    public void format(
-            @Option(required = true) Resource<?> file, 
-            @Option(name = "configName") PredefinedConfig configName,
+    public void format(@Option(required = true) Resource<?> file, @Option(name = "configName") PredefinedConfig configName,
             PipeOut out) {
-	try {
-	    formatResource(file);
-	} catch (Exception e) {
-	    ShellMessages.error(shell,
-		    "Could not format resource: " + e.getMessage());
-	}
+        try {
+            formatResource(file, configName);
+        } catch (Exception e) {
+            ShellMessages.error(shell, "Could not format resource: " + e.getMessage());
+        }
     }
 
     @Command(value = "setup", help = "Install a formatter file")
-    public void setup(
-            @Option(help = "Formatter file") Resource<?> format,
+    public void setup(@Option(help = "Formatter file") Resource<?> format,
             @Option(name = "configName") PredefinedConfig configName,
-            @Option(name="enableAutoFormat", flagOnly = true) boolean enableAutoFormat,
-            PipeOut out) {
-	try {
-	    if (!isValidCombination(format, configName)) {
-	        ShellMessages.error(shell, "Either set a config file or a predefined config.");
-	    } else {
-	        writer.install(format, configName, enableAutoFormat);
-	    }
-	} catch (Exception e) {
-	    ShellMessages.error(shell,
-		    "Could not setup formatter: " + e.getMessage());
-	}
+            @Option(name = "enableAutoFormat", flagOnly = true) boolean enableAutoFormat, PipeOut out) {
+        try {
+            if (!isValidCombination(format, configName)) {
+                ShellMessages.error(shell, "Either set a config file or a predefined config.");
+            } else {
+                writer.install(format, configName, enableAutoFormat);
+            }
+        } catch (Exception e) {
+            ShellMessages.error(shell, "Could not setup formatter: " + e.getMessage());
+        }
     }
 
     public void resourceCreated(@Observes ResourceCreated resource) {
@@ -86,42 +80,43 @@ public class FormatterPlugin implements Plugin {
     }
 
     private void formatResource(Resource<?> file) {
-	try {
-	    if (file instanceof JavaResource) {
-		ShellMessages.info(shell,
-			"Formatting " + file.getFullyQualifiedName());
-		String code = IOUtils.toString(file.getResourceInputStream());
-		CodeFormatter formatter = createFormatter();
-		TextEdit textedit = formatter.format(formatterOptions(), code,
-			0, code.length(), 0, getLineEnding(code));
-		IDocument doc = new Document(code);
-		textedit.apply(doc);
-		String formattedCode = doc.get();
-		((JavaResource) file).setContents(formattedCode);
-	    }
-	} catch (Exception e) {
-	    ShellMessages.error(shell,
-		    "Failed to format code: " + e.getMessage());
-	}
+        formatResource(file, null);
+    }
+
+    private void formatResource(Resource<?> file, PredefinedConfig configName) {
+        try {
+            if (file instanceof JavaResource) {
+                ShellMessages.info(shell, "Formatting " + file.getFullyQualifiedName());
+                String code = IOUtils.toString(file.getResourceInputStream());
+                CodeFormatter formatter = createFormatter(configName);
+                TextEdit textedit = formatter.format(formatterOptions(), code, 0, 
+                        code.length(), 0, getLineEnding(code));
+                IDocument doc = new Document(code);
+                textedit.apply(doc);
+                String formattedCode = doc.get();
+                ((JavaResource) file).setContents(formattedCode);
+            }
+        } catch (Exception e) {
+            ShellMessages.error(shell, "Failed to format code: " + e.getMessage());
+        }
     }
 
     private String getLineEnding(String fileDataString) {
-	return lineEnding.lineEndings(fileDataString);
+        return lineEnding.lineEndings(fileDataString);
     }
 
-    private CodeFormatter createFormatter() {
-	return ToolFactory.createCodeFormatter(getFormattingOptions());
+    private CodeFormatter createFormatter(PredefinedConfig configName) {
+        return ToolFactory.createCodeFormatter(getFormattingOptions(configName));
     }
 
-    private Map<String, String> getFormattingOptions() {
-	return reader.read();
+    private Map<String, String> getFormattingOptions(PredefinedConfig configName) {
+        return configName == null ? reader.read() : reader.readPredefined(configName);
     }
 
     private int formatterOptions() {
-	return CodeFormatter.K_COMPILATION_UNIT
-		| CodeFormatter.F_INCLUDE_COMMENTS;
+        return CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS;
     }
-    
+
     private boolean isValidCombination(Resource<?> format, PredefinedConfig configName) {
         boolean formatSet = format != null;
         boolean configSet = configName != null;
