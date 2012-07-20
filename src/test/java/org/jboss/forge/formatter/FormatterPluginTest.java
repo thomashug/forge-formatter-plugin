@@ -49,6 +49,18 @@ public class FormatterPluginTest extends AbstractShellTest {
     }
     
     @Test
+    public void should_skip_comment_formatting() throws Exception {
+        // given
+        initializeJavaProject();
+        
+        // when
+        getShell().execute("formatter " + javaSource.getAbsolutePath() + " --configName JBoss --skipComments");
+        
+        // then
+        compare("src/test/resources/reference/TestClass_comments.java");
+    }
+    
+    @Test
     public void should_install_custom_formatter() throws Exception {
         // given
         Project p = initializeJavaProject();
@@ -75,6 +87,19 @@ public class FormatterPluginTest extends AbstractShellTest {
         
         // then
         compare("src/test/resources/reference/TestClass_jboss.java");
+    }
+    
+    @Test
+    public void should_install_skip_comments() throws Exception {
+        // given
+        initializeJavaProject();
+        
+        // when
+        getShell().execute("formatter setup --configName JBoss --skipComments");
+        getShell().execute("formatter " + javaSource.getAbsolutePath());
+        
+        // then
+        compare("src/test/resources/reference/TestClass_comments.java");
     }
 
     @Before

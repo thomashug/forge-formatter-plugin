@@ -10,6 +10,7 @@ public abstract class BaseConfig {
 
     static final String FORMATTER_TAG = "formatter";
     static final String AUTOFORMAT_TAG = "autoFormatEnabled";
+    static final String SKIP_COMMENTS_TAG = "skipComments";
 
     FileResource<?> resolveForgeXml(Project project, boolean createIfMissing) {
         FileResource<?> forgeXml = (FileResource<?>) project.getProjectRoot().getChild(

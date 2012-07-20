@@ -13,12 +13,28 @@ public class ConfigWriter extends BaseConfig {
     @Inject
     private Project project;
 
-    public void install(Resource<?> formatter, PredefinedConfig configName, boolean enableAutoFormat) {
+    public ConfigWriter installFormatter(Resource<?> formatter, PredefinedConfig configName) {
         FileResource<?> forgeXml = resolveForgeXml(project, true);
         Node forge = XMLParser.parse(forgeXml.getResourceInputStream());
         installFormatterType(formatter, configName, forge);
-        installAutoFormat(enableAutoFormat, forge);
         forgeXml.setContents(XMLParser.toXMLInputStream(forge));
+        return this;
+    }
+    
+    public ConfigWriter installAutoFormat(boolean enableAutoFormat) {
+        FileResource<?> forgeXml = resolveForgeXml(project, true);
+        Node forge = XMLParser.parse(forgeXml.getResourceInputStream());
+        installFlag(AUTOFORMAT_TAG, enableAutoFormat, forge);
+        forgeXml.setContents(XMLParser.toXMLInputStream(forge));
+        return this;
+    }
+    
+    public ConfigWriter installSkipComments(boolean skipComments) {
+        FileResource<?> forgeXml = resolveForgeXml(project, true);
+        Node forge = XMLParser.parse(forgeXml.getResourceInputStream());
+        installFlag(SKIP_COMMENTS_TAG, skipComments, forge);
+        forgeXml.setContents(XMLParser.toXMLInputStream(forge));
+        return this;
     }
 
     private void installFormatterType(Resource<?> formatter, PredefinedConfig configName, Node forge) {
@@ -35,9 +51,9 @@ public class ConfigWriter extends BaseConfig {
         }
     }
     
-    private void installAutoFormat(boolean enableAutoFormat, Node forge) {
+    private void installFlag(String tag, boolean flag, Node forge) {
         Node formatter = lookupFormatter(forge, true);
-        formatter.createChild(AUTOFORMAT_TAG).text(String.valueOf(enableAutoFormat));
+        formatter.createChild(tag).text(String.valueOf(flag));
     }
 
 }

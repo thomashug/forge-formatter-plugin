@@ -47,6 +47,15 @@ your project:
     
 All following formattings will use the custom formatter config file.
 
+### Comments
+
+Sometimes you spend a while formatting JavaDoc to reflect the HTML output. Then the formatter
+comes and screws it all up - something we want to spare you from. Disable comment formatting
+with the following flag:
+
+    formatter setup ... --skipComments # persist the setting
+    formatter --skipComments           # one time skip on the formatter command
+
 ## Sample
 
 Create a new project:

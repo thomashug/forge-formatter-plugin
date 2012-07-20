@@ -31,6 +31,15 @@ public class ConfigReader extends BaseConfig {
         return false;
     }
     
+    public boolean isSkipComments() {
+        Node formatter = lookupFormatter(resolveForgeXml(project, false), false);
+        if (formatter != null) {
+            Node auto = formatter.getSingle(SKIP_COMMENTS_TAG);
+            return auto != null ? Boolean.valueOf(auto.getText()) : false;
+        }
+        return false;
+    }
+    
     public Map<String, String> read() {
         try {
             FileResource<?> forgeXml = resolveForgeXml(project, false);
