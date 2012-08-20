@@ -43,10 +43,12 @@ public class FormatterPlugin implements Plugin {
             @Option(required = true) Resource<?> file,
             @Option(name = "configName") PredefinedConfig configName,
             @Option(name = "skipComments", flagOnly = true) boolean skipComments,
+            @Option(name = "recursive", flagOnly = true) boolean recursive,
             PipeOut out) {
         try {
             context.withConfigName(configName)
-                   .skipComments(skipComments ? Boolean.TRUE : null);
+                   .skipComments(skipComments ? Boolean.TRUE : null)
+                   .recursive(recursive);
             commands.format().format(file, context);
         } catch (Exception e) {
             ShellMessages.error(shell, "Could not format resource: " + e.getMessage());

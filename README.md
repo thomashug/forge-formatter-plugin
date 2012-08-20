@@ -22,7 +22,14 @@ Once you have the plugin installed you can simply execute
 
     formatter ${path_to_file}.java
     
-This will format your Java file based on the Sun coding conventions.
+This will format your Java file based on the Sun coding conventions. You can also format
+a complete folder with
+
+    formatter ${path_to_parent_folder}
+    
+Or even more, format a folder recursively with
+
+    formatter ${path_to_parent_folder} --recursive
 
 ### Formatting Options
 
