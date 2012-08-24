@@ -1,12 +1,14 @@
 package org.jboss.forge.formatter.config;
 
+import org.jboss.forge.resources.DirectoryResource;
 import org.jboss.forge.resources.Resource;
 import org.jboss.forge.resources.java.JavaResource;
 
 @SuppressWarnings("rawtypes")
 public enum FormatterType {
 
-    Java(JavaResource.class);
+    Java(JavaResource.class),
+    Directory(DirectoryResource.class);
     
     private final Class<? extends Resource> resourceType;
 

@@ -86,7 +86,7 @@ Create now e.g. a JPA entity and use the formatter:
 
 Check the generated code:
 
-    [test] Test.java $ ls .
+    [test] Test.java $ less .
     
 And now format it:
 
